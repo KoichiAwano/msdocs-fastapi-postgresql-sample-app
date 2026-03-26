@@ -243,3 +243,7 @@ Thumbs.db #thumbnail cache on Windows
 
 # Azurite stuff
 __azurite_*.json
+
+# Local troubleshooting artifacts
+appservice-logs*.zip
+chat-log*.md

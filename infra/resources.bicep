@@ -1,4 +1,3 @@
-param name string
 param location string
 param resourceToken string
 param tags object
@@ -7,9 +6,9 @@ param databasePassword string
 @secure()
 param secretKey string
 
-var prefix = '${name}-${resourceToken}'
+ var prefix = take(resourceToken, 13)
 
-var pgServerName = '${prefix}-postgres-server'
+ var pgServerName = '${prefix}ps'
 var databaseSubnetName = 'database-subnet'
 var webappSubnetName = 'webapp-subnet'
 
@@ -79,7 +78,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
 }
 
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
-  name: '${pgServerName}.private.postgres.database.azure.com'
+  name: 'privatelink.postgres.database.azure.com'
   location: 'global'
   tags: tags
   dependsOn: [
@@ -99,7 +98,7 @@ resource privateDnsZoneCache 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 
 resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   parent: privateDnsZone
-  name: '${pgServerName}-link'
+  name: 'psqllink'
   location: 'global'
   properties: {
     registrationEnabled: false
@@ -168,7 +167,7 @@ resource web 'Microsoft.Web/sites@2024-11-01' = {
       alwaysOn: true
       linuxFxVersion: 'PYTHON|3.11'
       ftpsState: 'Disabled'
-      appCommandLine: 'src/entrypoint.sh'
+      appCommandLine: 'bash entrypoint.sh'
       minTlsVersion: '1.2'
     }
     httpsOnly: true
