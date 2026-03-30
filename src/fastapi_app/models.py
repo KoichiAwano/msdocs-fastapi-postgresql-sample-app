@@ -1,6 +1,5 @@
 import logging
 import os
-import typing
 from datetime import datetime
 from urllib.parse import quote_plus
 
@@ -18,7 +17,7 @@ if os.getenv("WEBSITE_HOSTNAME"):
         logger.info("Missing environment variable AZURE_POSTGRESQL_CONNECTIONSTRING")
     else:
         # Parse the connection string
-        details = dict(item.split('=') for item in env_connection_string.split())
+        details = dict(item.split("=") for item in env_connection_string.split())
 
         # Properly format the URL for SQLAlchemy
         sql_url = (
@@ -35,7 +34,9 @@ else:
     POSTGRES_DATABASE = os.environ.get("DBNAME")
     POSTGRES_PORT = os.environ.get("DBPORT", 5432)
 
-    sql_url = f"postgresql://{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
+    sql_url = (
+        f"postgresql://{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
+    )
 
 engine = create_engine(sql_url)
 
@@ -43,8 +44,9 @@ engine = create_engine(sql_url)
 def create_db_and_tables():
     return SQLModel.metadata.create_all(engine)
 
+
 class Restaurant(SQLModel, table=True):
-    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     name: str = Field(max_length=50)
     street_address: str = Field(max_length=50)
     description: str = Field(max_length=250)
@@ -52,13 +54,14 @@ class Restaurant(SQLModel, table=True):
     def __str__(self):
         return f"{self.name}"
 
+
 class Review(SQLModel, table=True):
-    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     restaurant: int = Field(foreign_key="restaurant.id")
     user_name: str = Field(max_length=50)
-    rating: typing.Optional[int]
+    rating: int | None
     review_text: str = Field(max_length=500)
     review_date: datetime
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.user_name}"
