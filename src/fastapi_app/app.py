@@ -25,7 +25,7 @@ if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
 
 parent_path = pathlib.Path(__file__).parent.parent
 app = FastAPI(lifespan=mcp_lifespan)
-app.mount("/mcp", mcp.streamable_http_app())
+app.mount("/api", mcp.streamable_http_app())
 app.mount("/static", StaticFiles(directory=parent_path / "static"), name="static")
 
 # Create Jinja2 environment with caching disabled to avoid issues
